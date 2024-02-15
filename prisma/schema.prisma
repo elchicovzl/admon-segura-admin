@@ -14,19 +14,144 @@ enum UserRole {
   USER
 }
 
+enum TypeUserList {
+  NATURAL
+  JURIDICO
+} 
+
+enum StatusList {
+  ACTIVO
+  INACTIVO
+}
+
+enum TypeDocumentList {
+  IDENTIFICACION
+  OTROS
+}
+
+enum AffiliateStatusList {
+  PENDIENTE
+  PROCESO
+  COMPLETO
+}
+
+enum GenderList {
+  Hombre
+  Mujer
+}
+
 model User {
   id            String    @id @default(cuid())
-  name          String?
   email         String?   @unique
   emailVerified DateTime?
   image         String?
   password      String?
   role          UserRole @default(USER)
   accounts      Account[]
+  userDetail   UserDetails?
+  address       Address[]
+  phones        Phones[]
+  affiliate     Affiliate[]
+  
+  status        StatusList @default(ACTIVO)
+
+  beneficiary Beneficiary?
+
   isTwoFactorEnabled Boolean @default(false)
   twoFactorConfirmation TwoFactorConfirmation?
 
   createdAt DateTime @default(now())
+}
+
+model Affiliate {
+  id                String    @id @default(cuid())
+  userId            String
+  status            AffiliateStatusList @default(PENDIENTE)
+  healt             String?
+  eps               String?
+  arl               String?
+  compensationBox   String?
+  typeContributorId   String
+
+  beneficiaries Beneficiary[]
+
+  admissionDate     DateTime?
+
+  createdAt         DateTime @default(now())
+  
+  user User @relation(fields: [userId], references: [id])
+  typeContributor TypeContributor @relation(fields: [typeContributorId], references: [id])
+}
+
+model TypeUser {
+  id  String    @id @default(cuid())
+  name TypeUserList  @default(NATURAL)
+}
+
+model Address {
+  id           String    @id @default(cuid())
+  userId       String
+  department   String?    @default("Antioquia")
+  city         String?
+  neighborhood String?
+  address      String?
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Phones {
+  id          String    @id @default(cuid())
+  userId      String
+  cellphone   String?
+  homephone   String?
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Beneficiary {
+  id           String  @id @default(cuid())
+  userId       String @unique
+
+  affiliateId  String
+  relationship String
+
+  createdAt    DateTime @default(now())
+
+  affiliate    Affiliate @relation(fields: [affiliateId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Document {
+  id           String  @id @default(cuid())
+  source       String
+  userId       String
+  typeDocument TypeDocumentList @default(IDENTIFICACION)
+
+  createdAt  DateTime @default(now())
+}
+
+model UserDetails {
+  id             String  @id @default(cuid())
+  userId         String @unique
+  firstName      String?
+  lastname       String?
+  gender         GenderList @default(Hombre)
+  identification String?
+  age            String?
+  salary         String?
+  ocupation      String?
+
+  user  User? @relation(fields: [userId], references: [id])
+}
+
+model TypeContributor {
+  id          String  @id @default(cuid())
+  name        String
+  code        String
+  description String
+  affiliateId String
+
+  affiliates    Affiliate[]
 }
 
 model Account {
