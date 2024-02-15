@@ -1,5 +1,5 @@
 import * as z from "zod";
-import { UserRole } from "@prisma/client";
+import { StatusList, UserRole } from "@prisma/client";
 
 export const SettingsSchema = z.object({
   name: z.optional(z.string()),
@@ -62,4 +62,47 @@ export const RegisterSchema = z.object({
   name: z.string().min(1, {
     message: "Name is required",
   }),
+});
+
+export const UserSchema = z.object({
+  email: z.string().email({
+    message: "Email is required",
+  }),
+  password: z.string().min(6, {
+    message: "Minimum 6 characters required",
+  }),
+
+  userDetails: z.optional(z.object({
+    userId: z.string(),
+    firstName: z.optional(z.string()),
+    lastname: z.optional(z.string()),
+    identification: z.optional(z.string()),
+    age: z.optional(z.string()),
+    salary: z.optional(z.string()),
+    ocupation: z.optional(z.string()),
+  })),
+
+  address: z.optional(z.object({
+    userId: z.string(),
+    department: z.optional(z.string()),
+    city: z.optional(z.string()),
+    neighborhood: z.optional(z.string()),
+    address: z.optional(z.string()),
+  })),
+
+  phones: z.optional(z.object({
+    userId: z.string(),
+    cellphone: z.optional(z.string()),
+    homephone: z.optional(z.string()),
+  })),
+
+  affiliate: z.optional(z.object({
+    userId: z.string(),
+    healt: z.optional(z.string()),
+    eps: z.optional(z.string()),
+    arl: z.optional(z.string()),
+    compensationBox: z.optional(z.string()),
+    typeContributorId: z.optional(z.string()),
+    admissionDate: z.optional(z.coerce.date())
+  }))
 });

@@ -7,7 +7,28 @@ import { columns } from "./_components/columns";
 const breadcrumbItems = [{ title: "User", link: "/dashboard/user" }];
 export default async function page() {
 
-  const users = await db.user.findMany({
+  const xprisma = db.$extends({
+    result: {
+      userDetails: {
+        fullname: {
+          // the dependencies
+          needs: { firstName: true, lastname: true },
+          compute(userDetails) {
+            // the computation logic
+            return `${userDetails?.firstName} ${userDetails?.lastname}`;
+          },
+        },
+      },
+    },
+  });
+
+  const users = await xprisma.user.findMany({
+    where: {
+      role: "USER"
+    },
+    include: {
+      userDetail: true,
+    },
     orderBy: {
       createdAt: "desc",
     },
@@ -19,7 +40,7 @@ export default async function page() {
         <BreadCrumb items={breadcrumbItems} />
       </div>
       <div className="p-6">
-        <DataTable columns={columns} data={users} />
+        <DataTable columns={columns} data={JSON.parse(JSON.stringify(users))} />
       </div>
     </>
   );
