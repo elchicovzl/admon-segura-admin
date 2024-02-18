@@ -8,18 +8,22 @@ import { useToast } from "@/components/ui/use-toast";
 import { useEffect, useState, useTransition } from "react";
 import { Heading } from "@/components/ui/heading";
 import { Button } from "@/components/ui/button";
-import { Loader2, Trash, AlertTriangle } from "lucide-react";
+import { Loader2, Trash, AlertTriangle, XCircle } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { register } from "@/actions/register";
 import { UserSchema } from "@/schemas";
+import axios from "axios";
 
 import data from '@/data/colombia.json';
 import { UserdefaultValue, UsersDto } from "@/types";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SelectSearch from "@/components/form/select-search";
 import DatePicker from "@/components/form/date-picker";
+import FileUpload from "@/components/form/file-upload";
+import { UploadButton } from "@/utils/uploadthing";
+import Image from "next/image";
 
 interface UserFormProps {
     initialData: any | null;
@@ -33,6 +37,8 @@ export const UserForm: React.FC<UserFormProps> = ({
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const [isPending, startTransition] = useTransition();
+    const [images, setImages] = useState<string[]>([]);
+    const [imageDeleting, setImageDeleting] = useState(false);
     const title = initialData ? "Editar usuario" : "Crear usuario";
     const description = initialData ? "Editar a usuario." : "Agregar un nuevo usuario";
     const toastMessage = initialData ? "User updated." : "User created.";
@@ -104,6 +110,30 @@ export const UserForm: React.FC<UserFormProps> = ({
 
     }, [form.formState, setPersonalErr]);
 
+    const handleImageDelete = async (image: string, index: number, images: string[]) => {
+        setImageDeleting(true);
+        const imageKey = image.substring(image.lastIndexOf('/') + 1);
+
+        axios.post('/api/uploadthing/delete', {imageKey}).then((res) => {
+            if (res.data.success) {
+                images.splice(index, 1);
+                setImages(images);
+                form.setValue('documents.documents', images);
+                toast({
+                    variant: "success",
+                    description: "Image Removed"
+                });
+            }
+        }).catch(() => {
+            toast({
+                variant: "destructive",
+                description: "Algo malo ocurrió"
+            });
+        }).finally(() => {
+            setImageDeleting(false);
+        });
+    }
+
 
     const onSubmit = async (values: UsersDto) => {
         setLoading(true);
@@ -111,7 +141,7 @@ export const UserForm: React.FC<UserFormProps> = ({
         if (initialData) {
                 //await axios.post(`/api/users/${initialData._id}/edit`, data);
         } else {
-            startTransition(() => {
+            /* startTransition(() => {
                 register(values)
                     .then((data) => {
                     if (data.error) {
@@ -133,7 +163,7 @@ export const UserForm: React.FC<UserFormProps> = ({
                     }
                     setLoading(false);
                 });
-            });
+            }); */
         }
     };
 
@@ -163,6 +193,7 @@ export const UserForm: React.FC<UserFormProps> = ({
                             <TabsTrigger value="personal" className="text-zinc-600 dark:text-zinc-200">Datos Personales  {(personalErr > 0) && (<span className="text-red-400 ml-3 flex items-center text-[12px]"><AlertTriangle className="w-[12px]" /> {personalErr}</span>)} </TabsTrigger>
                             <TabsTrigger value="address" className="text-zinc-600 dark:text-zinc-200">Dirección & Telefonos</TabsTrigger>
                             <TabsTrigger value="affiliate" className="text-zinc-600 dark:text-zinc-200">Afiliación</TabsTrigger>
+                            <TabsTrigger value="documents" className="text-zinc-600 dark:text-zinc-200">Documentos</TabsTrigger>
                         </TabsList>
                         <Separator className="my-3" />
                         <TabsContent value="personal" className="m-0">
@@ -498,6 +529,68 @@ export const UserForm: React.FC<UserFormProps> = ({
                                         </FormControl>
                                         <FormMessage />
                                         </FormItem>
+                                    )}
+                                />
+                            </div>
+                        </TabsContent>
+                        <TabsContent value="documents" className="m-0 ">
+                            <div className="md:w-full ">
+                                <FormField
+                                    control={form.control}
+                                    name="documents.documents"
+                                    render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Documentos</FormLabel>
+                                        <FormControl>
+
+                                            {images.length ? 
+                                            <div className="md:grid md:grid-cols-4 gap-4 border-2 
+                                            border-dashed border-primary/50 p-5">
+                                                {images.map((image, index) => (
+                                                    <div className="relative w-full  min-h-[200px] mt-4 border-2 
+                                                    ">
+                                                        <Image fill src={image} alt="otros" className="object-contain" />
+                                                        <Button onClick={() => handleImageDelete(image, index, images)} type="button" size="icon" variant="ghost" className="absolute right-[-4px] top-0">
+                                                            {imageDeleting ? <Loader2 /> : <XCircle /> }
+                                                        </Button>
+                                                    </div>
+                                                ))}
+                                            </div> : 
+
+                                            <div className="flex flex-col items-center max-w-full p-12 border-2 
+                                            border-dashed border-primary/50 rounded mt-4">
+                                                <UploadButton
+                                                    content={{button({ ready }) {
+                                                        if (ready) return <div>Elige archivos</div>;
+                                                   
+                                                        return "Cargando...";
+                                                      }}}
+                                                    endpoint="imageUploader"
+                                                    onClientUploadComplete={(res) => {
+                                                    let imgs:string[] = [];
+                                                    res.map((image, key)=> {
+                                                        imgs.push(image.url);
+                                                    });
+                                                    setImages(imgs);
+                                                    form.setValue('documents.documents', imgs);
+                                                    toast({
+                                                        variant: 'success',
+                                                        description: 'Upload Complete'
+                                                    });
+                                                    }}
+                                                    onUploadError={(error: Error) => {
+                                                    // Do something with the error.
+                                                    toast({
+                                                        variant: 'destructive',
+                                                        description: `ERROR! ${error.message}`
+                                                    })
+                                                    }}
+                                                />
+                                            </div>
+                                            }
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
                                     )}
                                 />
                             </div>

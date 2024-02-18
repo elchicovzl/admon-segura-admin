@@ -15,7 +15,7 @@ export default function Header() {
             href={"/"}
             target="_blank"
           >
-            <Image width="50" height="50" src="/images/logo.png" alt="logo" />
+            <Image width="50" height="50" src="/images/logo.png" alt="logo" style={{width:'50px', height:'50px'}} />
             Administración Segura
           </Link>
         </div>

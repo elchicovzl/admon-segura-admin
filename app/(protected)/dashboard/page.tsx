@@ -141,7 +141,7 @@ export default function page() {
                   <CardTitle>Overview</CardTitle>
                 </CardHeader>
                 <CardContent className="pl-2">
-                  <Overview />
+                  {/* <Overview /> */}
                 </CardContent>
               </Card>
               <Card className="col-span-4 md:col-span-3">
