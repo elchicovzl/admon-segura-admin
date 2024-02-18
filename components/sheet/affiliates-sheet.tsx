@@ -36,9 +36,9 @@ const AffiliatesSheet = () => {
             {loading ? (<p>Loading...</p>) :
               (
                 <>
-                {data?.map(({ id, healt, eps, arl, admissionDate }) => 
+                {data?.map(({ id, healt, eps, arl, admissionDate }, index:number) => 
                   (
-                    <Card className='my-3 p-0' >
+                    <Card key={index} className='my-3 p-0' >
                       <CardContent className='flex flex-wrap gap-3 items-center py-2 ' >
                           <div className='block '>
                             <strong className='block text-xs'>EPS:</strong>

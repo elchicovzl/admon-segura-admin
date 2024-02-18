@@ -104,5 +104,10 @@ export const UserSchema = z.object({
     compensationBox: z.optional(z.string()),
     typeContributorId: z.optional(z.string()),
     admissionDate: z.optional(z.coerce.date())
+  })),
+
+  documents:  z.optional(z.object({
+    userId: z.string(),
+    documents: z.optional(z.array(z.string()))
   }))
 });
