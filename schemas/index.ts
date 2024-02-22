@@ -108,6 +108,18 @@ export const UserSchema = z.object({
 
   documents:  z.optional(z.object({
     userId: z.string(),
-    documents: z.optional(z.array(z.string()))
-  }))
+    documents: z.optional(z.array(z.string())),
+  })),
+
+  beneficiaries: z.optional(z.array(z.object({
+    firstname: z.optional(z.string()),
+    lastname: z.optional(z.string()),
+    identification: z.optional(z.string()),
+    relationship: z.optional(z.string()),
+    documents:  z.optional(z.array(z.object({
+      beneficiaryId: z.string(),
+      documents: z.optional(z.array(z.string())),
+    }))),
+    
+  })))
 });
