@@ -52,10 +52,12 @@ model User {
   address       Address[]
   phones        Phones[]
   affiliate     Affiliate[]
+
+  documents     Document[]
   
   status        StatusList @default(ACTIVO)
 
-  beneficiary Beneficiary?
+  beneficiaries Beneficiary[]
 
   isTwoFactorEnabled Boolean @default(false)
   twoFactorConfirmation TwoFactorConfirmation?
@@ -110,11 +112,15 @@ model Phones {
 
 model Beneficiary {
   id           String  @id @default(cuid())
-  userId       String @unique
-
+  userId       String
   affiliateId  String
-  relationship String
 
+  firstName      String?
+  lastname       String?
+  identification String? 
+  relationship String?
+
+  documents Document[]
   createdAt    DateTime @default(now())
 
   affiliate    Affiliate @relation(fields: [affiliateId], references: [id])
@@ -122,12 +128,16 @@ model Beneficiary {
 }
 
 model Document {
-  id           String  @id @default(cuid())
-  source       String
-  userId       String
-  typeDocument TypeDocumentList @default(IDENTIFICACION)
+  id            String  @id @default(cuid())
+  source        String
+  userId        String?
+  beneficiaryId String? 
+  typeDocument TypeDocumentList? @default(IDENTIFICACION)
 
   createdAt  DateTime @default(now())
+
+  beneficiary Beneficiary? @relation(fields: [beneficiaryId], references: [id])
+  user User? @relation(fields: [userId], references: [id])
 }
 
 model UserDetails {

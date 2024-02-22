@@ -1,30 +1,32 @@
 'use client'
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { UseFormReturn, useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { useToast } from "@/components/ui/use-toast";
 import { useEffect, useState, useTransition } from "react";
 import { Heading } from "@/components/ui/heading";
 import { Button } from "@/components/ui/button";
-import { Loader2, Trash, AlertTriangle, XCircle } from "lucide-react";
+import { Loader2, Trash, AlertTriangle } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import axios from "axios";
 import { Input } from "@/components/ui/input";
 import { register } from "@/actions/register";
 import { UserSchema } from "@/schemas";
-import axios from "axios";
 
 import data from '@/data/colombia.json';
 import { UserdefaultValue, UsersDto } from "@/types";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import SelectSearch from "@/components/form/select-search";
-import DatePicker from "@/components/form/date-picker";
-import FileUpload from "@/components/form/file-upload";
-import { UploadButton } from "@/utils/uploadthing";
-import Image from "next/image";
+import PersonalPartial from "@/app/(protected)/dashboard/user/_components/_form/personal-partial";
+import AddressPartial from "@/app/(protected)/dashboard/user/_components/_form/address-partial";
+import AffiliatePartial from "../_components/_form/affiliate-partial";
+import DocumentsPartial from "../_components/_form/documents-partial";
+import BeneficiariesPartial from "../_components/_form/beneficiaries-partial";
 
+export interface PartialFormType  {
+    form : UseFormReturn,
+    loading: boolean
+}
 interface UserFormProps {
     initialData: any | null;
 }
@@ -33,66 +35,15 @@ export const UserForm: React.FC<UserFormProps> = ({
     initialData
 }) => {
     const router = useRouter();
-    const { toast } = useToast();
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const [isPending, startTransition] = useTransition();
-    const [images, setImages] = useState<string[]>([]);
-    const [imageDeleting, setImageDeleting] = useState(false);
     const title = initialData ? "Editar usuario" : "Crear usuario";
     const description = initialData ? "Editar a usuario." : "Agregar un nuevo usuario";
     const toastMessage = initialData ? "User updated." : "User created.";
     const action = initialData ? "Guardar cambios" : "Crear";
 
     const defaultValues = initialData ? initialData : UserdefaultValue;
-
-    const eps = [
-        { label: "EMPRESAS PUBLICAS DE MEDELLIN SERVICIOS MEDICOS", item: "EMPRESAS PUBLICAS DE MEDELLIN SERVICIOS MEDICOS"},
-        { label: "FONDO DE PASIVO SOCIAL DE FERROCARRILES NACIONALES DE COLOMBIA", item: "FONDO DE PASIVO SOCIAL DE FERROCARRILES NACIONALES DE COLOMBIA"},
-        { label: "COLMEDICA ENTIDAD PROMOTORA DE SALUD S.A.", item: "COLMEDICA ENTIDAD PROMOTORA DE SALUD S.A."},
-        { label: "SALUD TOTAL S.A. EPS ARS", item: "SALUD TOTAL S.A. EPS ARS"},
-        { label: "CAFESALUD EPS", item: "CAFESALUD EPS"},
-        { label: "E.P.S. SANITAS S.A.", item: "E.P.S. SANITAS S.A."},
-        { label: "INSTITUTO DE SEGUROS SOCIALES", item: "INSTITUTO DE SEGUROS SOCIALES"},
-        { label: "COMPENSAR ENTIDAD PROMOTORA DE SALUD", item: "COMPENSAR ENTIDAD PROMOTORA DE SALUD"},
-        { label: "CAJA DE COMPENSACION FAMILIAR COMFENALCO ANTIOQUIA", item: "CAJA DE COMPENSACION FAMILIAR COMFENALCO ANTIOQUIA"},
-        { label: "COMPAÑIA SURAMERICANA DE SERVICIOS DE SALUD S.A. SUSALUD", item: "COMPAÑIA SURAMERICANA DE SERVICIOS DE SALUD S.A. SUSALUD"},
-        { label: "COMFENALCO VALLE EPS", item: "COMFENALCO VALLE EPS"},
-        { label: "SALUDCOOP EPS", item: "SALUDCOOP EPS"},
-        { label: "HUMANA VIVIR S.A. EPS", item: "HUMANA VIVIR S.A. EPS"},
-        { label: "SALUD COLPATRIA S.A.", item: "SALUD COLPATRIA S.A."},
-        { label: "COOMEVA EPS S.A.", item: "COOMEVA EPS S.A."},
-        { label: "E.P.S. FAMISANAR LTDA. CAFAM COLSUBSIDIO", item: "E.P.S. FAMISANAR LTDA. CAFAM COLSUBSIDIO"},
-        { label: "SERVICIO OCCIDENTAL DE SALUD S.A. S.O.S.", item: "SERVICIO OCCIDENTAL DE SALUD S.A. S.O.S."},
-        { label: "CRUZBLANCA S.A.", item: "CRUZBLANCA S.A."},
-        { label: "SOLIDARIA DE SALUD SOLSALUD S.A.", item: "SOLIDARIA DE SALUD SOLSALUD S.A."},
-        { label: "SALUDVIDA S.A. EPS", item: "SALUDVIDA S.A. EPS"},
-        { label: "SALUDCOLOMBIA EPS S.A.", item: "SALUDCOLOMBIA EPS S.A."},
-        { label: "REDSALUD ATENCION HUMANA EPS S.A.", item: "REDSALUD ATENCION HUMANA EPS S.A."},
-        { label: "Nueva Promotora de Salud - Nueva EPS", item: "Nueva Promotora de Salud - Nueva EPS"},
-        { label: "FONDO DE SOLIDARIDAD Y GARANTIA-FOSYGA-MINISTERIO DE SALDU", item: "FONDO DE SOLIDARIDAD Y GARANTIA-FOSYGA-MINISTERIO DE SALDU"},
-    ] as const
-
-    const compensationBox = [
-        { label: "Colpensiones", item: "Colpensiones"},
-        { label: "caja de compensacion1", item: "caja de compensacion1"},
-        { label: "caja de compensacion2", item: "caja de compensacion2"},
-        { label: "caja de compensacion3", item: "caja de compensacion3"}
-    ]
-
-    const healt = [
-        { label: "Salud total", item: "Salud total"},
-        { label: "salud 1", item: "salud 1"},
-        { label: "salud 2", item: "salud 2"},
-        { label: "salud 3", item: "salud 3"}
-    ] as const
-
-    const arl = [
-        { label: "ARL 1", item: "ARL 1"},
-        { label: "ARL 2", item: "ARL 2"},
-        { label: "ARL 3", item: "ARL 3"},
-        { label: "ARL 4", item: "ARL 4"}
-    ] as const
 
     const form= useForm<UsersDto>({
         resolver: zodResolver(UserSchema),
@@ -103,6 +54,7 @@ export const UserForm: React.FC<UserFormProps> = ({
 
     useEffect(() => {
         if (Object.keys(form.formState.errors).length > 0) {
+            console.log(form.formState.errors);
             setPersonalErr(Object.keys(form.formState.errors).length);
         }else {
             setPersonalErr(0);
@@ -110,33 +62,12 @@ export const UserForm: React.FC<UserFormProps> = ({
 
     }, [form.formState, setPersonalErr]);
 
-    const handleImageDelete = async (image: string, index: number, images: string[]) => {
-        setImageDeleting(true);
-        const imageKey = image.substring(image.lastIndexOf('/') + 1);
-
-        axios.post('/api/uploadthing/delete', {imageKey}).then((res) => {
-            if (res.data.success) {
-                images.splice(index, 1);
-                setImages(images);
-                form.setValue('documents.documents', images);
-                toast({
-                    variant: "success",
-                    description: "Image Removed"
-                });
-            }
-        }).catch(() => {
-            toast({
-                variant: "destructive",
-                description: "Algo malo ocurrió"
-            });
-        }).finally(() => {
-            setImageDeleting(false);
-        });
-    }
+    
 
 
     const onSubmit = async (values: UsersDto) => {
         setLoading(true);
+        console.log(values);
        
         if (initialData) {
                 //await axios.post(`/api/users/${initialData._id}/edit`, data);
@@ -194,406 +125,23 @@ export const UserForm: React.FC<UserFormProps> = ({
                             <TabsTrigger value="address" className="text-zinc-600 dark:text-zinc-200">Dirección & Telefonos</TabsTrigger>
                             <TabsTrigger value="affiliate" className="text-zinc-600 dark:text-zinc-200">Afiliación</TabsTrigger>
                             <TabsTrigger value="documents" className="text-zinc-600 dark:text-zinc-200">Documentos</TabsTrigger>
+                            <TabsTrigger value="beneficiaries" className="text-zinc-600 dark:text-zinc-200">Beneficiarios</TabsTrigger>
                         </TabsList>
                         <Separator className="my-3" />
                         <TabsContent value="personal" className="m-0">
-                            <div className="md:grid md:grid-cols-4 gap-8">
-                                <FormField
-                                    control={form.control}
-                                    name="email"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                        <FormLabel>Email</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                            disabled={loading}
-                                            placeholder="Email"
-                                            {...field}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="userDetails.firstName"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                        <FormLabel>Nombre</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                            disabled={loading}
-                                            placeholder="Nombre"
-                                            {...field}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="userDetails.lastname"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                        <FormLabel>Apellido</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                            disabled={loading}
-                                            placeholder="Apellido"
-                                            {...field}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="userDetails.identification"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                        <FormLabel>Identificación</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                            disabled={loading}
-                                            placeholder="Identificación"
-                                            {...field}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                
-                                <FormField
-                                    control={form.control}
-                                    name="password"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                        <FormLabel>Password</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                            disabled={loading}
-                                            placeholder="*******"
-                                            type="password"
-                                            {...field}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={form.control}
-                                    name="userDetails.age"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                        <FormLabel>Edad</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                            disabled={loading}
-                                            placeholder="edad"
-                                            {...field}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={form.control}
-                                    name="userDetails.ocupation"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                        <FormLabel>Ocupación</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                            disabled={loading}
-                                            placeholder="Ocupación"
-                                            {...field}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={form.control}
-                                    name="userDetails.salary"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                        <FormLabel>Salario</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                            disabled={loading}
-                                            placeholder="Salario"
-                                            {...field}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </div>
+                            <PersonalPartial form={form} loading={loading} />
                         </TabsContent>
                         <TabsContent value="address" className="m-0">
-                            <div className="md:grid md:grid-cols-4 gap-8">
-                                <FormField
-                                    control={form.control}
-                                    name="address.department"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                        <FormLabel>Departamento</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                            disabled={loading}
-                                            placeholder="Departamento"
-                                            {...field}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="address.city"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                        <FormLabel>Municipio</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                            disabled={loading}
-                                            placeholder="Municipio"
-                                            {...field}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="address.neighborhood"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                        <FormLabel>Barrio</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                            disabled={loading}
-                                            placeholder="Barrio"
-                                            {...field}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="address.address"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                        <FormLabel>Dirección</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                            disabled={loading}
-                                            placeholder="Dirección"
-                                            {...field}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="phones.homephone"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                        <FormLabel>Teléfono de casa</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                            disabled={loading}
-                                            placeholder="Telefono de casa"
-                                            {...field}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="phones.cellphone"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                        <FormLabel>Celular</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                            disabled={loading}
-                                            placeholder="Celular"
-                                            {...field}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </div>
+                            <AddressPartial form={form} loading={loading} />
                         </TabsContent>
                         <TabsContent value="affiliate" className="m-0">
-                            <div className="md:grid md:grid-cols-4 gap-8">
-                                <FormField
-                                    control={form.control}
-                                    name="affiliate.typeContributorId"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Tipo de cotizante</FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                disabled={loading}
-                                                placeholder="Tipo de cotizante"
-                                                {...field}
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="affiliate.eps"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>EPSS</FormLabel>
-                                            <FormControl className="truncate">
-                                                <SelectSearch {...field} form={form} values={eps} nameValue="affiliate.eps" />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="affiliate.arl"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>ARL</FormLabel>
-                                            <FormControl className="truncate">
-                                                <SelectSearch {...field} form={form} values={arl} nameValue="affiliate.arl" />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="affiliate.healt"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>ARL</FormLabel>
-                                            <FormControl className="truncate">
-                                                <SelectSearch {...field} form={form} values={healt} nameValue="affiliate.healt" />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="affiliate.compensationBox"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Caja de compensación</FormLabel>
-                                            <FormControl className="truncate">
-                                                <SelectSearch {...field} form={form} values={compensationBox} nameValue="affiliate.compensationBox" />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="affiliate.admissionDate"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                        <FormLabel>Fecha de ingreso</FormLabel>
-                                        <FormControl>
-                                            <DatePicker {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </div>
+                            <AffiliatePartial form={form} loading={loading} />
                         </TabsContent>
-                        <TabsContent value="documents" className="m-0 ">
-                            <div className="md:w-full ">
-                                <FormField
-                                    control={form.control}
-                                    name="documents.documents"
-                                    render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Documentos</FormLabel>
-                                        <FormControl>
-
-                                            {images.length ? 
-                                            <div className="md:grid md:grid-cols-4 gap-4 border-2 
-                                            border-dashed border-primary/50 p-5">
-                                                {images.map((image, index) => (
-                                                    <div className="relative w-full  min-h-[200px] mt-4 border-2 
-                                                    ">
-                                                        <Image fill src={image} alt="otros" className="object-contain" />
-                                                        <Button onClick={() => handleImageDelete(image, index, images)} type="button" size="icon" variant="ghost" className="absolute right-[-4px] top-0">
-                                                            {imageDeleting ? <Loader2 /> : <XCircle /> }
-                                                        </Button>
-                                                    </div>
-                                                ))}
-                                            </div> : 
-
-                                            <div className="flex flex-col items-center max-w-full p-12 border-2 
-                                            border-dashed border-primary/50 rounded mt-4">
-                                                <UploadButton
-                                                    content={{button({ ready }) {
-                                                        if (ready) return <div>Elige archivos</div>;
-                                                   
-                                                        return "Cargando...";
-                                                      }}}
-                                                    endpoint="imageUploader"
-                                                    onClientUploadComplete={(res) => {
-                                                    let imgs:string[] = [];
-                                                    res.map((image, key)=> {
-                                                        imgs.push(image.url);
-                                                    });
-                                                    setImages(imgs);
-                                                    form.setValue('documents.documents', imgs);
-                                                    toast({
-                                                        variant: 'success',
-                                                        description: 'Upload Complete'
-                                                    });
-                                                    }}
-                                                    onUploadError={(error: Error) => {
-                                                    // Do something with the error.
-                                                    toast({
-                                                        variant: 'destructive',
-                                                        description: `ERROR! ${error.message}`
-                                                    })
-                                                    }}
-                                                />
-                                            </div>
-                                            }
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                    )}
-                                />
-                            </div>
+                        <TabsContent value="documents" className="m-0">
+                            <DocumentsPartial form={form} loading={loading} />
+                        </TabsContent>
+                        <TabsContent value="beneficiaries" className="m-0">
+                            <BeneficiariesPartial form={form} loading={loading} />
                         </TabsContent>
                     </Tabs>
                 
