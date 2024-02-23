@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 import { DataTable } from "./_components/data-table";
 import { columns } from "./_components/columns";
 
-const breadcrumbItems = [{ title: "User", link: "/dashboard/user" }];
+const breadcrumbItems = [{ title: "Usuarios", link: "/dashboard/user" }];
 export default async function page() {
 
   const xprisma = db.$extends({
