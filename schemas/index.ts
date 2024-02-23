@@ -116,10 +116,6 @@ export const UserSchema = z.object({
     lastname: z.optional(z.string()),
     identification: z.optional(z.string()),
     relationship: z.optional(z.string()),
-    documents:  z.optional(z.array(z.object({
-      beneficiaryId: z.string(),
-      documents: z.optional(z.array(z.string())),
-    }))),
-    
+    documents:  z.optional(z.array(z.string())),
   })))
 });

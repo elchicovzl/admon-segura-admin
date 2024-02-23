@@ -6,8 +6,8 @@ interface UserFormProps {
 }
 
 const breadcrumbItems = [
-    { title: "Users", link: "/dashboard/user" },
-    { title: "Create user", link: "/dashboard/user/create" }
+    { title: "Usuarios", link: "/dashboard/user" },
+    { title: "Crear usuario", link: "/dashboard/user/create" }
 ];
 
 export default async function page() {

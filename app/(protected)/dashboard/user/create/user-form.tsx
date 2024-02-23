@@ -22,6 +22,7 @@ import AddressPartial from "@/app/(protected)/dashboard/user/_components/_form/a
 import AffiliatePartial from "../_components/_form/affiliate-partial";
 import DocumentsPartial from "../_components/_form/documents-partial";
 import BeneficiariesPartial from "../_components/_form/beneficiaries-partial";
+import { toast } from "@/components/ui/use-toast";
 
 export interface PartialFormType  {
     form : UseFormReturn,
@@ -54,7 +55,6 @@ export const UserForm: React.FC<UserFormProps> = ({
 
     useEffect(() => {
         if (Object.keys(form.formState.errors).length > 0) {
-            console.log(form.formState.errors);
             setPersonalErr(Object.keys(form.formState.errors).length);
         }else {
             setPersonalErr(0);
@@ -62,17 +62,13 @@ export const UserForm: React.FC<UserFormProps> = ({
 
     }, [form.formState, setPersonalErr]);
 
-    
-
-
     const onSubmit = async (values: UsersDto) => {
         setLoading(true);
         console.log(values);
-       
         if (initialData) {
                 //await axios.post(`/api/users/${initialData._id}/edit`, data);
         } else {
-            /* startTransition(() => {
+            startTransition(() => {
                 register(values)
                     .then((data) => {
                     if (data.error) {
@@ -86,7 +82,7 @@ export const UserForm: React.FC<UserFormProps> = ({
                     if (data.success) {
                         toast({
                             variant: "default",
-                            title: "Success.",
+                            title: "Registro exitoso.",
                             description: data.success,
                         });
                         router.refresh();
@@ -94,7 +90,7 @@ export const UserForm: React.FC<UserFormProps> = ({
                     }
                     setLoading(false);
                 });
-            }); */
+            });
         }
     };
 

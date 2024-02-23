@@ -5,8 +5,9 @@ import axios from "axios";
 import { useToast } from '@/components/ui/use-toast';
 import Image from "next/image";
 import { Button } from '@/components/ui/button';
-import { Loader2, XCircle } from 'lucide-react';
+import { Archive, Loader2, XCircle } from 'lucide-react';
 import { UploadButton } from "@/utils/uploadthing";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 
 const DocumentsPartial: React.FC<PartialFormType> = ({
@@ -14,7 +15,7 @@ const DocumentsPartial: React.FC<PartialFormType> = ({
     loading
 }) => {
     const { toast } = useToast();
-    const [images, setImages] = useState<string[]>([]);
+    const [images, setImages] = useState<string[]>(form.getValues('documents.documents'));
     const [imageDeleting, setImageDeleting] = useState(false);
 
 
@@ -29,7 +30,7 @@ const DocumentsPartial: React.FC<PartialFormType> = ({
                 form.setValue('documents.documents', images);
                 toast({
                     variant: "success",
-                    description: "Image Removed"
+                    description: "Documento removido exitosamente!."
                 });
             }
         }).catch(() => {
@@ -42,66 +43,73 @@ const DocumentsPartial: React.FC<PartialFormType> = ({
         });
     }
   return (
-    <div className="md:w-full ">
-        <FormField
-            control={form.control}
-            name="documents.documents"
-            render={({ field }) => (
-            <FormItem>
-                <FormLabel>Documentos</FormLabel>
-                <FormControl>
+    <Card className="">
+        <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+            <Archive /> Documentos necesarios para afiliación del usuario. <span className="text-xs text-gray-700">(max 5 archivos)</span>
+            </CardTitle></CardHeader>
+        <CardContent>   
+            <div className="md:w-full ">
+                <FormField
+                    control={form.control}
+                    name="documents.documents"
+                    render={({ field }) => (
+                    <FormItem>
+                        {/* <FormLabel>Documentos</FormLabel> */}
+                        <FormControl>
 
-                    {images.length ? 
-                    <div className="md:grid md:grid-cols-4 gap-4 border-2 
-                    border-dashed border-primary/50 p-5">
-                        {images.map((image, index) => (
-                            <div className="relative w-full  min-h-[200px] mt-4 border-2 
-                            ">
-                                <Image fill src={image} alt="otros" className="object-contain" />
-                                <Button onClick={() => handleImageDelete(image, index, images)} type="button" size="icon" variant="ghost" className="absolute right-[-4px] top-0">
-                                    {imageDeleting ? <Loader2 /> : <XCircle /> }
-                                </Button>
+                            {images.length ? 
+                            <div className="md:grid md:grid-cols-4 gap-4 border-2 
+                            border-dashed border-primary/50 p-5">
+                                {images.map((image, index) => (
+                                    <div className="relative w-full  min-h-[200px] mt-4 border-2" key={index}>
+                                        <Image fill src={image} alt="otros" className="object-contain" />
+                                        <Button onClick={() => handleImageDelete(image, index, images)} type="button" size="icon" variant="ghost" className="absolute right-[-4px] top-0">
+                                            {imageDeleting ? <Loader2 /> : <XCircle /> }
+                                        </Button>
+                                    </div>
+                                ))}
+                            </div> : 
+
+                            <div className="flex flex-col items-center max-w-full p-12 border-2 
+                            border-dashed border-primary/50 rounded mt-4">
+                                <UploadButton
+                                    content={{button({ ready }) {
+                                        if (ready) return <div>Elige archivos</div>;
+                                    
+                                        return "Cargando...";
+                                        }}}
+                                    endpoint="imageUploader"
+                                    onClientUploadComplete={(res) => {
+                                    let imgs:string[] = [];
+                                    res.map((image, key)=> {
+                                        imgs.push(image.url);
+                                    });
+                                    setImages(imgs);
+                                    form.setValue('documents.documents', imgs);
+                                    toast({
+                                        variant: 'success',
+                                        description: 'Subida de documentos exitosa!'
+                                    });
+                                    }}
+                                    onUploadError={(error: Error) => {
+                                    // Do something with the error.
+                                    toast({
+                                        variant: 'destructive',
+                                        description: `ERROR! ${error.message}`
+                                    })
+                                    }}
+                                />
                             </div>
-                        ))}
-                    </div> : 
-
-                    <div className="flex flex-col items-center max-w-full p-12 border-2 
-                    border-dashed border-primary/50 rounded mt-4">
-                        <UploadButton
-                            content={{button({ ready }) {
-                                if (ready) return <div>Elige archivos</div>;
-                            
-                                return "Cargando...";
-                                }}}
-                            endpoint="imageUploader"
-                            onClientUploadComplete={(res) => {
-                            let imgs:string[] = [];
-                            res.map((image, key)=> {
-                                imgs.push(image.url);
-                            });
-                            setImages(imgs);
-                            form.setValue('documents.documents', imgs);
-                            toast({
-                                variant: 'success',
-                                description: 'Upload Complete'
-                            });
-                            }}
-                            onUploadError={(error: Error) => {
-                            // Do something with the error.
-                            toast({
-                                variant: 'destructive',
-                                description: `ERROR! ${error.message}`
-                            })
-                            }}
-                        />
-                    </div>
-                    }
-                </FormControl>
-                <FormMessage />
-            </FormItem>
-            )}
-        />
-    </div>
+                            }
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                    )}
+                />
+            </div>
+        </CardContent>
+    </Card>
   )
 }
 
