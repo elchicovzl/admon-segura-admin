@@ -54,7 +54,6 @@ export const UserForm: React.FC<UserFormProps> = ({
 
     useEffect(() => {
         if (Object.keys(form.formState.errors).length > 0) {
-            console.log(form.formState.errors);
             setPersonalErr(Object.keys(form.formState.errors).length);
         }else {
             setPersonalErr(0);
@@ -67,8 +66,6 @@ export const UserForm: React.FC<UserFormProps> = ({
 
     const onSubmit = async (values: UsersDto) => {
         setLoading(true);
-        console.log(values);
-       
         if (initialData) {
                 //await axios.post(`/api/users/${initialData._id}/edit`, data);
         } else {
