@@ -26,7 +26,8 @@ import { toast } from "@/components/ui/use-toast";
 
 export interface PartialFormType  {
     form : UseFormReturn,
-    loading: boolean
+    loading: boolean,
+    edit: boolean
 }
 interface UserFormProps {
     initialData: any | null;
@@ -45,6 +46,8 @@ export const UserForm: React.FC<UserFormProps> = ({
     const action = initialData ? "Guardar cambios" : "Crear";
 
     const defaultValues = initialData ? initialData : UserdefaultValue;
+
+    console.log(defaultValues)
 
     const form= useForm<UsersDto>({
         resolver: zodResolver(UserSchema),
@@ -77,6 +80,7 @@ export const UserForm: React.FC<UserFormProps> = ({
                             title: "Hubo un problema.",
                             description: data.error,
                         });
+                        setLoading(false);
                     }
 
                     if (data.success) {
@@ -125,19 +129,19 @@ export const UserForm: React.FC<UserFormProps> = ({
                         </TabsList>
                         <Separator className="my-3" />
                         <TabsContent value="personal" className="m-0">
-                            <PersonalPartial form={form} loading={loading} />
+                            <PersonalPartial form={form} loading={loading} edit={initialData ? true : false} />
                         </TabsContent>
                         <TabsContent value="address" className="m-0">
-                            <AddressPartial form={form} loading={loading} />
+                            <AddressPartial form={form} loading={loading} edit={initialData ? true : false} />
                         </TabsContent>
                         <TabsContent value="affiliate" className="m-0">
-                            <AffiliatePartial form={form} loading={loading} />
+                            <AffiliatePartial form={form} loading={loading} edit={initialData ? true : false} />
                         </TabsContent>
                         <TabsContent value="documents" className="m-0">
-                            <DocumentsPartial form={form} loading={loading} />
+                            <DocumentsPartial form={form} loading={loading} edit={initialData ? true : false} />
                         </TabsContent>
                         <TabsContent value="beneficiaries" className="m-0">
-                            <BeneficiariesPartial form={form} loading={loading} />
+                            <BeneficiariesPartial form={form} loading={loading} edit={initialData ? true : false} />
                         </TabsContent>
                     </Tabs>
                 

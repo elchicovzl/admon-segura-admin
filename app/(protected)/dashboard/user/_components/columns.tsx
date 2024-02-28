@@ -77,7 +77,7 @@ export const columns: ColumnDef<UsersColumns>[] = [
             </DropdownMenuTrigger>
 
             <DropdownMenuContent align="end">
-              <Link href={`/dashboard/users/${id}`}>
+              <Link href={`/dashboard/user/${id}`}>
                 <DropdownMenuItem>
                   <Pencil className="h-4 w-4 mr-2" />
                   Editar

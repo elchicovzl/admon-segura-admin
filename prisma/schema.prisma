@@ -1,7 +1,7 @@
 // prisma/schema.prisma
 datasource db {
   provider  = "postgresql"
-  url  	    = env("DATABASE_URL")
+  url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
 
@@ -17,7 +17,7 @@ enum UserRole {
 enum TypeUserList {
   NATURAL
   JURIDICO
-} 
+}
 
 enum StatusList {
   ACTIVO
@@ -41,59 +41,59 @@ enum GenderList {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  email         String?   @unique
+  id            String       @id @default(cuid())
+  email         String?      @unique
   emailVerified DateTime?
   image         String?
   password      String?
-  role          UserRole @default(USER)
+  role          UserRole     @default(USER)
   accounts      Account[]
-  userDetail   UserDetails?
+  userDetail    UserDetails?
   address       Address[]
   phones        Phones[]
   affiliate     Affiliate[]
 
-  documents     Document[]
-  
-  status        StatusList @default(ACTIVO)
+  documents Document[]
+
+  status StatusList @default(ACTIVO)
 
   beneficiaries Beneficiary[]
 
-  isTwoFactorEnabled Boolean @default(false)
+  isTwoFactorEnabled    Boolean                @default(false)
   twoFactorConfirmation TwoFactorConfirmation?
 
   createdAt DateTime @default(now())
 }
 
 model Affiliate {
-  id                String    @id @default(cuid())
+  id                String              @id @default(cuid())
   userId            String
   status            AffiliateStatusList @default(PENDIENTE)
   healt             String?
   eps               String?
   arl               String?
   compensationBox   String?
-  typeContributorId   String
+  typeContributorId String
 
   beneficiaries Beneficiary[]
 
-  admissionDate     DateTime?
+  admissionDate DateTime?
 
-  createdAt         DateTime @default(now())
-  
-  user User @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+
+  user            User            @relation(fields: [userId], references: [id])
   typeContributor TypeContributor @relation(fields: [typeContributorId], references: [id])
 }
 
 model TypeUser {
-  id  String    @id @default(cuid())
-  name TypeUserList  @default(NATURAL)
+  id   String       @id @default(cuid())
+  name TypeUserList @default(NATURAL)
 }
 
 model Address {
-  id           String    @id @default(cuid())
+  id           String  @id @default(cuid())
   userId       String
-  department   String?    @default("Antioquia")
+  department   String? @default("Antioquia")
   city         String?
   neighborhood String?
   address      String?
@@ -102,47 +102,47 @@ model Address {
 }
 
 model Phones {
-  id          String    @id @default(cuid())
-  userId      String
-  cellphone   String?
-  homephone   String?
+  id        String  @id @default(cuid())
+  userId    String
+  cellphone String?
+  homephone String?
 
   user User @relation(fields: [userId], references: [id])
 }
 
 model Beneficiary {
-  id           String  @id @default(cuid())
-  userId       String
-  affiliateId  String
+  id          String @id @default(cuid())
+  userId      String
+  affiliateId String
 
-  firstName      String?
+  firstname      String?
   lastname       String?
-  identification String? 
-  relationship String?
+  identification String?
+  relationship   String?
 
   documents Document[]
-  createdAt    DateTime @default(now())
+  createdAt DateTime   @default(now())
 
-  affiliate    Affiliate @relation(fields: [affiliateId], references: [id])
-  user User @relation(fields: [userId], references: [id])
+  affiliate Affiliate @relation(fields: [affiliateId], references: [id])
+  user      User      @relation(fields: [userId], references: [id])
 }
 
 model Document {
-  id            String  @id @default(cuid())
+  id            String            @id @default(cuid())
   source        String
   userId        String?
-  beneficiaryId String? 
-  typeDocument TypeDocumentList? @default(IDENTIFICACION)
+  beneficiaryId String?
+  typeDocument  TypeDocumentList? @default(IDENTIFICACION)
 
-  createdAt  DateTime @default(now())
+  createdAt DateTime @default(now())
 
   beneficiary Beneficiary? @relation(fields: [beneficiaryId], references: [id])
-  user User? @relation(fields: [userId], references: [id])
+  user        User?        @relation(fields: [userId], references: [id])
 }
 
 model UserDetails {
-  id             String  @id @default(cuid())
-  userId         String @unique
+  id             String     @id @default(cuid())
+  userId         String     @unique
   firstName      String?
   lastname       String?
   gender         GenderList @default(Hombre)
@@ -151,32 +151,32 @@ model UserDetails {
   salary         String?
   ocupation      String?
 
-  user  User? @relation(fields: [userId], references: [id])
+  user User? @relation(fields: [userId], references: [id])
 }
 
 model TypeContributor {
-  id          String  @id @default(cuid())
+  id          String @id @default(cuid())
   name        String
   code        String
   description String
   affiliateId String
 
-  affiliates    Affiliate[]
+  affiliates Affiliate[]
 }
 
 model Account {
-  id                 String  @id @default(cuid())
-  userId             String
-  type               String
-  provider           String
-  providerAccountId  String
-  refresh_token      String?  @db.Text
-  access_token       String?  @db.Text
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String?  @db.Text
-  session_state      String?
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -184,27 +184,27 @@ model Account {
 }
 
 model VerificationToken {
-  id String @id @default(cuid())
-  email String
-  token String @unique
+  id      String   @id @default(cuid())
+  email   String
+  token   String   @unique
   expires DateTime
 
   @@unique([email, token])
 }
 
 model PasswordResetToken {
-  id String @id @default(cuid())
-  email String
-  token String @unique
+  id      String   @id @default(cuid())
+  email   String
+  token   String   @unique
   expires DateTime
 
   @@unique([email, token])
 }
 
 model TwoFactorToken {
-  id String @id @default(cuid())
-  email String
-  token String @unique
+  id      String   @id @default(cuid())
+  email   String
+  token   String   @unique
   expires DateTime
 
   @@unique([email, token])
@@ -214,7 +214,7 @@ model TwoFactorConfirmation {
   id String @id @default(cuid())
 
   userId String
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId])
 }

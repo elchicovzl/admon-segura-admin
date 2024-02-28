@@ -31,8 +31,14 @@ const initialBeneState = {
 
 const BeneficiariesPartial: React.FC<PartialFormType> = ({
     form,
-    loading
+    loading,
+    edit
 }) => {
+
+  const beneDocumentsData = (edit)? form.getValues('beneficiaries') : form.getValues('beneficiaries')
+
+  console.log(beneDocumentsData);
+
 
   const [{firstname, lastname, identification, relationship, benedocuments}, setState]  = useState(initialBeneState);
   const [beneficiaries, setBeneficiaries] = useState<BeneficiaryType[]>(form.getValues('beneficiaries'));
@@ -77,6 +83,13 @@ const BeneficiariesPartial: React.FC<PartialFormType> = ({
   const handleImageDelete = async (image: string, index: number, images: string[]) => {
     console.log("removiendo..")
     setImageDeleting(true);
+
+    if (edit) {
+      images = images.map((val, index) => {
+          return val.source;
+      });
+    }
+
     const imageKey = image.substring(image.lastIndexOf('/') + 1);
 
     axios.post('/api/uploadthing/delete', {imageKey}).then((res) => {
@@ -214,7 +227,7 @@ const BeneficiariesPartial: React.FC<PartialFormType> = ({
       </Card>
         <Accordion type="single" collapsible className="w-full mt-5 space-y-3">
         {beneficiaries.map((item, index) => (
-          <Card>
+          <Card key={`card${index}`}>
             <AccordionItem value={`item-${index}`}>
             <CardHeader>
             <AccordionTrigger className="!py-3 !px-0 capitalize">
@@ -312,10 +325,9 @@ const BeneficiariesPartial: React.FC<PartialFormType> = ({
                 <div className="md:grid md:grid-cols-4 gap-4 border-2 
                   border-dashed border-primary/50 p-5">
                       {beneficiaries[index].documents.map((doc, indexDoc) => (
-                          <div className="relative w-full  min-h-[200px] mt-4 border-2 
-                          ">
-                              <Image fill src={doc} alt="otros" className="object-contain" />
-                              <Button onClick={() => handleImageDelete(doc, indexDoc, beneficiaries[index].documents)} type="button" size="icon" variant="ghost" className="absolute right-[-4px] top-0">
+                          <div key={`doc${index}${indexDoc}`} className="relative w-full  min-h-[200px] mt-4 border-2">
+                              <Image fill src={edit? doc.source: doc} alt="otros" className="object-contain" />
+                              <Button onClick={() => handleImageDelete(edit? doc.source: doc, indexDoc, beneficiaries[index].documents)} type="button" size="icon" variant="ghost" className="absolute right-[-4px] top-0">
                                   {imageDeleting ? <Loader2 /> : <XCircle /> }
                               </Button>
                           </div>

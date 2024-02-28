@@ -10,7 +10,8 @@ import { BookOpenCheck } from 'lucide-react';
 
 const AffiliatePartial: React.FC<PartialFormType> = ({
     form,
-    loading
+    loading,
+    edit
 }) => {
   return (
     <Card className="">

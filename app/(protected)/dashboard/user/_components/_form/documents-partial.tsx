@@ -12,15 +12,25 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 const DocumentsPartial: React.FC<PartialFormType> = ({
     form,
-    loading
+    loading,
+    edit
 }) => {
     const { toast } = useToast();
-    const [images, setImages] = useState<string[]>(form.getValues('documents.documents'));
+
+    const documentsData = (edit)? form.getValues('documents') : form.getValues('documents.documents')
+    const [images, setImages] = useState<string[]>(documentsData);
     const [imageDeleting, setImageDeleting] = useState(false);
 
 
     const handleImageDelete = async (image: string, index: number, images: string[]) => {
         setImageDeleting(true);
+
+        if (edit) {
+            images = images.map((val, index) => {
+                return val.source;
+            });
+        }
+
         const imageKey = image.substring(image.lastIndexOf('/') + 1);
 
         axios.post('/api/uploadthing/delete', {imageKey}).then((res) => {
@@ -61,10 +71,12 @@ const DocumentsPartial: React.FC<PartialFormType> = ({
                             {images.length ? 
                             <div className="md:grid md:grid-cols-4 gap-4 border-2 
                             border-dashed border-primary/50 p-5">
+                               
+                                
                                 {images.map((image, index) => (
                                     <div className="relative w-full  min-h-[200px] mt-4 border-2" key={index}>
-                                        <Image fill src={image} alt="otros" className="object-contain" />
-                                        <Button onClick={() => handleImageDelete(image, index, images)} type="button" size="icon" variant="ghost" className="absolute right-[-4px] top-0">
+                                        <Image fill src={edit? image.source: image} alt="otros" className="object-contain" />
+                                        <Button onClick={() => handleImageDelete(edit? image.source: image, index, images)} type="button" size="icon" variant="ghost" className="absolute right-[-4px] top-0">
                                             {imageDeleting ? <Loader2 /> : <XCircle /> }
                                         </Button>
                                     </div>

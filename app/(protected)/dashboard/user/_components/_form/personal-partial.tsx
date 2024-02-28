@@ -9,7 +9,8 @@ import { User } from 'lucide-react';
 
 const PersonalPartial: React.FC<PartialFormType> = ({
     form,
-    loading
+    loading,
+    edit
 }) => {
   return (
     <Card className="">
@@ -35,7 +36,7 @@ const PersonalPartial: React.FC<PartialFormType> = ({
                 />
                 <FormField
                     control={form.control}
-                    name="userDetails.firstName"
+                    name="userDetail.firstName"
                     render={({ field }) => (
                         <FormItem>
                         <FormLabel>Nombre</FormLabel>
@@ -52,7 +53,7 @@ const PersonalPartial: React.FC<PartialFormType> = ({
                 />
                 <FormField
                     control={form.control}
-                    name="userDetails.lastname"
+                    name="userDetail.lastname"
                     render={({ field }) => (
                         <FormItem>
                         <FormLabel>Apellido</FormLabel>
@@ -69,7 +70,7 @@ const PersonalPartial: React.FC<PartialFormType> = ({
                 />
                 <FormField
                     control={form.control}
-                    name="userDetails.identification"
+                    name="userDetail.identification"
                     render={({ field }) => (
                         <FormItem>
                         <FormLabel>Identificación</FormLabel>
@@ -106,7 +107,7 @@ const PersonalPartial: React.FC<PartialFormType> = ({
 
                 <FormField
                     control={form.control}
-                    name="userDetails.age"
+                    name="userDetail.age"
                     render={({ field }) => (
                         <FormItem>
                         <FormLabel>Edad</FormLabel>
@@ -124,7 +125,7 @@ const PersonalPartial: React.FC<PartialFormType> = ({
 
                 <FormField
                     control={form.control}
-                    name="userDetails.ocupation"
+                    name="userDetail.ocupation"
                     render={({ field }) => (
                         <FormItem>
                         <FormLabel>Ocupación</FormLabel>
@@ -142,7 +143,7 @@ const PersonalPartial: React.FC<PartialFormType> = ({
 
                 <FormField
                     control={form.control}
-                    name="userDetails.salary"
+                    name="userDetail.salary"
                     render={({ field }) => (
                         <FormItem>
                         <FormLabel>Salario</FormLabel>

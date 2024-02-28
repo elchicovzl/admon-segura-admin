@@ -7,7 +7,8 @@ import { BookUser } from 'lucide-react';
 
 const AddressPartial: React.FC<PartialFormType> = ({
     form,
-    loading
+    loading,
+    edit
 }) => {
   return (
     <Card className="">
