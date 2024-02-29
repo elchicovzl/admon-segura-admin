@@ -56,7 +56,7 @@ const DocumentsPartial: React.FC<PartialFormType> = ({
     <Card className="">
         <CardHeader>
             <CardTitle className="flex items-center gap-2">
-            <Archive /> Documentos necesarios para afiliación del usuario. <span className="text-xs text-gray-700">(max 5 archivos)</span>
+            <Archive /> Documentos necesarios para el usuario. <span className="text-xs text-gray-700">(max 5 archivos)</span>
             </CardTitle></CardHeader>
         <CardContent>   
             <div className="md:w-full ">

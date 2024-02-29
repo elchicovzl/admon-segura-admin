@@ -4,6 +4,9 @@ import { currentUser } from "@/lib/auth";
 import { EditUserDto, UsersDto } from "@/types";
 import { redirect } from "next/navigation";
 import { UserForm } from "../create/user-form";
+import { DataTable } from "./_components/data-table";
+import { columns } from "./_components/columns";
+import { Label } from "@/components/ui/label";
 
 const breadcrumbItems = [
     { title: "Usuarios", link: "/dashboard/user" },
@@ -19,11 +22,8 @@ const UserEditPage = async ({
 
     const { userDetail } = initialData;
 
-    console.log("user details:", userDetail);
-
     breadcrumbItems[1].title = `${userDetail?.firstName} ${userDetail?.lastname}`;
     breadcrumbItems[1].link = `/dashboard/user/${initialData.id}`;
-
         
     return ( 
         <>

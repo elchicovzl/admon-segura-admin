@@ -12,7 +12,7 @@ const AddressPartial: React.FC<PartialFormType> = ({
 }) => {
   return (
     <Card className="">
-        <CardHeader><CardTitle className="flex items-center gap-2"><BookUser />Datos de dirección y números telefónicos del nuevo usuario.</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="flex items-center gap-2"><BookUser />Datos de dirección y números telefónicos del usuario.</CardTitle></CardHeader>
         <CardContent>
             <div className="md:grid md:grid-cols-4 gap-8">
                 <FormField

@@ -39,6 +39,9 @@ const DatePicker = React.forwardRef<HTMLInputElement, InputProps>(
                     locale={es}
                     selected={value}
                     onSelect={onChange}
+                    captionLayout="dropdown-buttons"
+                    fromYear={1950}
+                    toYear={2025}
                     /* disabled={(date) =>
                       date > new Date() || date < new Date("1900-01-01")
                     } */

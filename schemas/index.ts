@@ -82,12 +82,11 @@ export const UserSchema = z.object({
   userDetail: z.optional(
     z.object({
       userId: z.string(),
-      firstName: z.optional(z.string()),
+      firstname: z.optional(z.string()),
       lastname: z.optional(z.string()),
       identification: z.optional(z.string()),
-      age: z.optional(z.string()),
-      salary: z.optional(z.string()),
       ocupation: z.optional(z.string()),
+      birthdate: z.optional(z.coerce.date()),
     })
   ),
 
@@ -115,6 +114,7 @@ export const UserSchema = z.object({
       healt: z.optional(z.string()),
       eps: z.optional(z.string()),
       arl: z.optional(z.string()),
+      salary: z.optional(z.string()),
       compensationBox: z.optional(z.string()),
       typeContributorId: z.optional(z.string()),
       admissionDate: z.optional(z.coerce.date()),

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import axios from "axios";
-import { PartialFormType } from '../../create/user-form';
+import { PartialFormType } from '../../../user/create/user-form';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 
@@ -36,10 +36,6 @@ const BeneficiariesPartial: React.FC<PartialFormType> = ({
 }) => {
 
   const beneDocumentsData = (edit)? form.getValues('beneficiaries') : form.getValues('beneficiaries')
-
-  console.log(beneDocumentsData);
-
-
   const [{firstname, lastname, identification, relationship, benedocuments}, setState]  = useState(initialBeneState);
   const [beneficiaries, setBeneficiaries] = useState<BeneficiaryType[]>(form.getValues('beneficiaries'));
   const [imageDeleting, setImageDeleting] = useState(false);
@@ -81,7 +77,6 @@ const BeneficiariesPartial: React.FC<PartialFormType> = ({
   };
 
   const handleImageDelete = async (image: string, index: number, images: string[]) => {
-    console.log("removiendo..")
     setImageDeleting(true);
 
     if (edit) {

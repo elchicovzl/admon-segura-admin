@@ -24,8 +24,6 @@ export const getUser = async ({ userId }: GetUserProps) => {
       },
     });
 
-    console.log(user);
-
     return user;
   } catch (error) {
     console.log("[GET_USER]", error);

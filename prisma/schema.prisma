@@ -29,6 +29,11 @@ enum TypeDocumentList {
   OTROS
 }
 
+enum UserProcess {
+  AFILIACION
+  INCAPACIDAD
+}
+
 enum AffiliateStatusList {
   PENDIENTE
   PROCESO
@@ -49,9 +54,11 @@ model User {
   role          UserRole     @default(USER)
   accounts      Account[]
   userDetail    UserDetails?
-  address       Address[]
-  phones        Phones[]
+  address       Address?
+  phones        Phones?
   affiliate     Affiliate[]
+
+  process UserProcess @default(AFILIACION)
 
   documents Document[]
 
@@ -74,6 +81,7 @@ model Affiliate {
   arl               String?
   compensationBox   String?
   typeContributorId String
+  salary            String?
 
   beneficiaries Beneficiary[]
 
@@ -92,22 +100,22 @@ model TypeUser {
 
 model Address {
   id           String  @id @default(cuid())
-  userId       String
+  userId       String  @unique
   department   String? @default("Antioquia")
   city         String?
   neighborhood String?
   address      String?
 
-  user User @relation(fields: [userId], references: [id])
+  user User? @relation(fields: [userId], references: [id])
 }
 
 model Phones {
   id        String  @id @default(cuid())
-  userId    String
+  userId    String  @unique
   cellphone String?
   homephone String?
 
-  user User @relation(fields: [userId], references: [id])
+  user User? @relation(fields: [userId], references: [id])
 }
 
 model Beneficiary {
@@ -143,12 +151,11 @@ model Document {
 model UserDetails {
   id             String     @id @default(cuid())
   userId         String     @unique
-  firstName      String?
+  firstname      String?
   lastname       String?
   gender         GenderList @default(Hombre)
   identification String?
-  age            String?
-  salary         String?
+  birthdate      DateTime?
   ocupation      String?
 
   user User? @relation(fields: [userId], references: [id])

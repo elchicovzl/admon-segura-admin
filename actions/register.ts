@@ -1,6 +1,5 @@
 "use server";
 
-import * as z from "zod";
 import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
 import { RegisterSchema, UserSchema } from "@/schemas";
@@ -24,7 +23,7 @@ export const register = async (values: UsersDto) => {
   const {
     email,
     password,
-    userDetails,
+    userDetail,
     address,
     phones,
     affiliate,
@@ -63,12 +62,11 @@ export const register = async (values: UsersDto) => {
         db.userDetails.create({
           data: {
             userId: user.id,
-            firstName: userDetails?.firstName,
-            lastname: userDetails?.lastname,
-            age: userDetails?.age,
-            identification: userDetails?.identification,
-            salary: userDetails?.salary,
-            ocupation: userDetails?.ocupation,
+            firstname: userDetail?.firstname,
+            lastname: userDetail?.lastname,
+            identification: userDetail?.identification,
+            birthdate: userDetail?.birthdate,
+            ocupation: userDetail?.ocupation,
           },
         }),
 
@@ -96,6 +94,7 @@ export const register = async (values: UsersDto) => {
             eps: affiliate?.eps,
             arl: affiliate?.arl,
             healt: affiliate?.healt,
+            salary: affiliate?.salary,
             admissionDate: affiliate?.admissionDate,
             compensationBox: affiliate?.compensationBox,
             typeContributorId: "clsm08a5a0000barngmkexfnj",
@@ -117,7 +116,7 @@ export const register = async (values: UsersDto) => {
         data: {
           userId: user.id,
           affiliateId: userAffiliate.id,
-          firstName: beneficiary.firstname,
+          firstname: beneficiary.firstname,
           lastname: beneficiary.lastname,
           identification: beneficiary.identification,
           relationship: beneficiary.relationship,
@@ -136,8 +135,6 @@ export const register = async (values: UsersDto) => {
       (beneficiaryCreated: BeneficiaryUserType, index) => {
         beneficiaries?.map((beneficiary, index) => {
           if (beneficiary.identification == beneficiaryCreated.identification) {
-            console.log("guardar bene");
-
             beneficiary.documents?.map((doc, index) => {
               const docBeneObj: DocumentBeneficiaryType = {
                 //@ts-ignore
