@@ -20,13 +20,14 @@ import {
 interface valuesSelect {
     nameValue: String
     values : [{label:string, item:string }]
+    onChangeProcess :  (value:string) => void
 }
 
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement>, valuesSelect {}
 
 const SelectSearch = React.forwardRef<HTMLInputElement, InputProps>(
-    ({ className, type, value, form, values, nameValue, ...props }, ref) => {
+    ({ className, type, value, form, values, nameValue, onChangeProcess, ...props }, ref) => {
     return (
         <Popover>
             <PopoverTrigger asChild>
@@ -56,6 +57,10 @@ const SelectSearch = React.forwardRef<HTMLInputElement, InputProps>(
                           key={language.item}
                           onSelect={() => {
                             form?.setValue(nameValue, language.item)
+
+                            if (typeof onChangeProcess == "function") {
+                              onChangeProcess(language.item)
+                            }
                           }}
                         >
                           <Check

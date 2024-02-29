@@ -2,7 +2,7 @@
 
 import { User, UserDetails } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, MoreHorizontal, Newspaper, Pencil } from "lucide-react";
+import { ArrowUpDown, MoreHorizontal, Newspaper, Pencil,  User as UserIcon } from "lucide-react";
 
 import Link from "next/link";
 
@@ -20,42 +20,63 @@ import { useSheetAffiliateStore } from "@/store/store";
 
 export const columns: ColumnDef<UsersColumns>[] = [
     {
-      accessorKey: "userDetail.identification",
+      accessorKey: "user.userDetail.fullname",
       header: ({ column }) => {
         return (
           <Button
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            Identificación
+            Usuario
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        )
+      },
+      cell: ({row}) => {
+        return (
+          <div className="flex items-center">
+            <UserIcon size={22} /><span className="ml-1 capitalize">{row.original.user.userDetail.fullname}</span>
+          </div>
+        )
+      }
+    },
+    {
+      accessorKey: "typeContributor.name",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Tipo Cotizante
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         )
       },
     },
     {
-      accessorKey: "userDetail.fullname",
+      accessorKey: "status",
       header: ({ column }) => {
         return (
           <Button
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            Nombre completo
+            Estado de afiliación
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         )
       },
     },
     {
-      accessorKey: "email",
+      accessorKey: "admissionDate",
       header: ({ column }) => {
         return (
           <Button
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            Email
+            Fecha de ingreso
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         )
@@ -83,11 +104,6 @@ export const columns: ColumnDef<UsersColumns>[] = [
                   Editar
                 </DropdownMenuItem>
               </Link>
-              
-              <DropdownMenuItem onClick={setUserId(id)}>
-                <Newspaper className="h-4 w-4 mr-2" />
-                Afiliaciones
-              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         )

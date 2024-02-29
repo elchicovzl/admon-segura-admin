@@ -29,6 +29,7 @@ import {
     User2Icon,
     UserX2Icon,
     X,
+    BookOpenCheck
   } from "lucide-react";
   
   export type Icon = LucideIcon;
@@ -60,6 +61,7 @@ import {
     sun: SunMedium,
     moon: Moon,
     laptop: Laptop,
+    BookOpenCheck: BookOpenCheck,
     gitHub: ({ ...props }: LucideProps) => (
       <svg
         aria-hidden="true"

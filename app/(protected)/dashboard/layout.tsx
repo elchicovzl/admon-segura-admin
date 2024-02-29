@@ -3,6 +3,7 @@ import Header from "@/components/layout/header";
 import Sidebar from "@/components/layout/sidebar";
 import ProgressBarProvider from "@/components/progress-bar-provider";
 import AffiliatesSheet from "@/components/sheet/affiliates-sheet";
+import 'react-day-picker/dist/style.css';
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {

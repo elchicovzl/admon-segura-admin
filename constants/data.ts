@@ -125,9 +125,9 @@ export const navItems: NavItem[] = [
     label: "user",
   },
   {
-    title: "Afiliados",
-    href: "/dashboard/affiliate",
-    icon: "employee",
+    title: "Afiliaciones",
+    href: "/dashboard/affiliations",
+    icon: "BookOpenCheck",
     label: "affiliate",
-  }
+  },
 ];

@@ -4,16 +4,18 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { UseFormReturn } from 'react-hook-form';
 import { PartialFormType } from '../../create/user-form';
+import DatePicker from '@/components/form/date-picker';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { User } from 'lucide-react';
 
 const PersonalPartial: React.FC<PartialFormType> = ({
     form,
-    loading
+    loading,
+    edit
 }) => {
   return (
     <Card className="">
-        <CardHeader><CardTitle className="flex items-center gap-2"> <User /> Datos personales del nuevo usuario.</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="flex items-center gap-2"> <User /> Datos personales del usuario.</CardTitle></CardHeader>
         <CardContent>
             <div className="md:grid md:grid-cols-4 gap-8">
                 <FormField
@@ -35,7 +37,7 @@ const PersonalPartial: React.FC<PartialFormType> = ({
                 />
                 <FormField
                     control={form.control}
-                    name="userDetails.firstName"
+                    name="userDetail.firstname"
                     render={({ field }) => (
                         <FormItem>
                         <FormLabel>Nombre</FormLabel>
@@ -52,7 +54,7 @@ const PersonalPartial: React.FC<PartialFormType> = ({
                 />
                 <FormField
                     control={form.control}
-                    name="userDetails.lastname"
+                    name="userDetail.lastname"
                     render={({ field }) => (
                         <FormItem>
                         <FormLabel>Apellido</FormLabel>
@@ -69,7 +71,7 @@ const PersonalPartial: React.FC<PartialFormType> = ({
                 />
                 <FormField
                     control={form.control}
-                    name="userDetails.identification"
+                    name="userDetail.identification"
                     render={({ field }) => (
                         <FormItem>
                         <FormLabel>Identificación</FormLabel>
@@ -106,25 +108,21 @@ const PersonalPartial: React.FC<PartialFormType> = ({
 
                 <FormField
                     control={form.control}
-                    name="userDetails.age"
+                    name="userDetail.birthdate"
                     render={({ field }) => (
                         <FormItem>
-                        <FormLabel>Edad</FormLabel>
-                        <FormControl>
-                            <Input
-                            disabled={loading}
-                            placeholder="edad"
-                            {...field}
-                            />
-                        </FormControl>
-                        <FormMessage />
+                            <FormLabel>Fecha de nacimiento</FormLabel>
+                            <FormControl>
+                                <DatePicker {...field} />
+                            </FormControl>
+                            <FormMessage />
                         </FormItem>
                     )}
                 />
 
                 <FormField
                     control={form.control}
-                    name="userDetails.ocupation"
+                    name="userDetail.ocupation"
                     render={({ field }) => (
                         <FormItem>
                         <FormLabel>Ocupación</FormLabel>
@@ -132,24 +130,6 @@ const PersonalPartial: React.FC<PartialFormType> = ({
                             <Input
                             disabled={loading}
                             placeholder="Ocupación"
-                            {...field}
-                            />
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                />
-
-                <FormField
-                    control={form.control}
-                    name="userDetails.salary"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>Salario</FormLabel>
-                        <FormControl>
-                            <Input
-                            disabled={loading}
-                            placeholder="Salario"
                             {...field}
                             />
                         </FormControl>
