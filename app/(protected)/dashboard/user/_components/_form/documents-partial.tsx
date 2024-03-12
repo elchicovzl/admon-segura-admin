@@ -21,6 +21,8 @@ const DocumentsPartial: React.FC<PartialFormType> = ({
     const [images, setImages] = useState<string[]>(documentsData);
     const [imageDeleting, setImageDeleting] = useState(false);
 
+    console.log(images);
+
 
     const handleImageDelete = async (image: string, index: number, images: string[]) => {
         setImageDeleting(true);
@@ -37,7 +39,12 @@ const DocumentsPartial: React.FC<PartialFormType> = ({
             if (res.data.success) {
                 images.splice(index, 1);
                 setImages(images);
-                form.setValue('documents.documents', images);
+                if(edit) {
+                    form.setValue('documents', images);
+                }else {
+                    form.setValue('documents.documents', images);
+                }
+                
                 toast({
                     variant: "success",
                     description: "Documento removido exitosamente!."
@@ -75,8 +82,8 @@ const DocumentsPartial: React.FC<PartialFormType> = ({
                                 
                                 {images.map((image, index) => (
                                     <div className="relative w-full  min-h-[200px] mt-4 border-2" key={index}>
-                                        <Image fill src={edit? image.source: image} alt="otros" className="object-contain" />
-                                        <Button onClick={() => handleImageDelete(edit? image.source: image, index, images)} type="button" size="icon" variant="ghost" className="absolute right-[-4px] top-0">
+                                        <Image fill src={image.source? image.source: image} alt="otros" className="object-contain" />
+                                        <Button onClick={() => handleImageDelete(image.source? image.source: image, index, images)} type="button" size="icon" variant="ghost" className="absolute right-[-4px] top-0">
                                             {imageDeleting ? <Loader2 /> : <XCircle /> }
                                         </Button>
                                     </div>
@@ -97,8 +104,13 @@ const DocumentsPartial: React.FC<PartialFormType> = ({
                                     res.map((image, key)=> {
                                         imgs.push(image.url);
                                     });
+
                                     setImages(imgs);
-                                    form.setValue('documents.documents', imgs);
+                                    if (edit) {
+                                        form.setValue('documents', imgs);
+                                    }else {
+                                        form.setValue('documents.documents', imgs);
+                                    }
                                     toast({
                                         variant: 'success',
                                         description: 'Subida de documentos exitosa!'

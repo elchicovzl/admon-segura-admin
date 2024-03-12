@@ -2,16 +2,43 @@
 
 import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
-import { RegisterSchema, UserSchema } from "@/schemas";
-import { getUserByEmail } from "@/data/user";
+import {
+  AffiliateSchema,
+  EditUserSchema,
+  RegisterSchema,
+  UserSchema,
+} from "@/schemas";
+import { getUserByEmail, getUserById } from "@/data/user";
 import { sendVerificationEmail } from "@/lib/mail";
 import { generateVerificationToken } from "@/lib/tokens";
 import {
+  AffiliateDto,
   BeneficiaryUserType,
   DocumentBeneficiaryType,
   DocumentUserType,
+  UserEditDto,
   UsersDto,
 } from "@/types";
+import { z } from "zod";
+
+export const registerAffiliate = async (values: AffiliateDto) => {
+  const validatedFields = AffiliateSchema.safeParse(values);
+
+  if (!validatedFields.success) {
+    return { error: "Invalid fields!" };
+  }
+
+  const { ["beneficiaries"]: excludedKey, ...affiliate } = validatedFields.data;
+
+  try {
+    const affiliateResult = await db.affiliate.create({
+      data: affiliate,
+    });
+  } catch (error) {
+    console.log("[REGISTER_AFFILIATE]", error);
+    return { error: "Algo salió mal!" };
+  }
+};
 
 export const register = async (values: UsersDto) => {
   const validatedFields = UserSchema.safeParse(values);
@@ -167,4 +194,79 @@ export const register = async (values: UsersDto) => {
   ); */
 
   return { success: "Usuario creado con exito!" };
+};
+
+export const updateUser = async (values: UserEditDto) => {
+  const validatedFields = EditUserSchema.safeParse(values);
+
+  if (!validatedFields.success) {
+    return { error: "Invalid fields!" };
+  }
+
+  console.log("actualizando usuario--", values);
+
+  const { id, email, password, userDetail } = validatedFields.data;
+
+  const createDocuments: DocumentUserType[] = [];
+
+  values.documents?.map((doc, index) => {
+    const docObj: DocumentUserType = {
+      userId: doc.userId,
+      source: doc.source,
+    };
+
+    createDocuments.push(docObj);
+  });
+
+  try {
+    const updatedUser = await db.user.update({
+      where: { id: id },
+      data: {
+        email: values?.email,
+        userDetail: {
+          update: {
+            where: {
+              userId: id,
+            },
+            data: {
+              firstname: values.userDetail?.firstname,
+              lastname: values.userDetail?.lastname,
+              identification: values.userDetail?.identification,
+              birthdate: values.userDetail?.birthdate,
+              ocupation: values.userDetail?.ocupation,
+            },
+          },
+        },
+        address: {
+          update: {
+            where: {
+              userId: id,
+            },
+            data: {
+              address: values.address?.address,
+              city: values.address?.city,
+              department: values.address?.department,
+              neighborhood: values.address?.neighborhood,
+            },
+          },
+        },
+        phones: {
+          update: {
+            where: {
+              userId: id,
+            },
+            data: {
+              cellphone: values.phones?.cellphone,
+              homephone: values.phones?.homephone,
+            },
+          },
+        },
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    return { error: "Algo salió mal!" };
+  }
+
+  return { success: "Usuario actualizado con exito!" };
 };

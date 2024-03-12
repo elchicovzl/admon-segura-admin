@@ -19,7 +19,7 @@ const UserEditPage = async ({
 
 
     const initialData:EditUserDto = await getUser({userId: params.userId});
-
+    console.log(initialData)
     const { userDetail } = initialData;
 
     breadcrumbItems[1].title = `${userDetail?.firstName} ${userDetail?.lastname}`;

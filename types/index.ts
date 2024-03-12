@@ -1,5 +1,5 @@
 import { Icons } from "@/components/icons";
-import { UserSchema } from "@/schemas";
+import { AffiliateSchema, EditUserSchema, UserSchema } from "@/schemas";
 import { PrismaClient, UserDetails } from "@prisma/client";
 
 import * as z from "zod";
@@ -74,6 +74,8 @@ function getDefaults<T extends z.ZodTypeAny>(
 export const UserdefaultValue = getDefaults<typeof UserSchema>(UserSchema);
 
 export type UsersDto = z.infer<typeof UserSchema>;
+export type AffiliateDto = z.infer<typeof AffiliateSchema>;
+export type UserEditDto = z.infer<typeof EditUserSchema>;
 
 export type initialData = {
   email: string;

@@ -10,37 +10,60 @@ import { BookOpenCheck } from 'lucide-react';
 import { DataTable } from '../../../user/[userId]/_components/data-table';
 import { columns } from '../../../user/[userId]/_components/columns';
 import { Separator } from '@/components/ui/separator';
+import { getUsersSelect } from '@/actions/get-user';
 
 const AffiliatePartial: React.FC<PartialFormType> = ({
     form,
     loading,
     edit,
-    affiliates
+    affiliates,
+    users,
+    typeContributors
 }) => {
-    const defaulProcess = edit ? form.getValues('affiliate.0.process') : "AFILIACION";
-    console.log(defaulProcess);
-    const [process, setProcess] = useState(defaulProcess);
+
+    const [process, setProcess] = useState(edit ? form.getValues('process') : "AFILIACION");
+    const [userId, setUserId] = useState(edit ? form.getValues('userId') : "");
+    const [typeContributor, setTypeContributor] = useState(edit ? form.getValues('typeContributorId'): "");
 
     const changeProcess = (value:string) => {
         setProcess(value)
+    }
+    const changeUserSelect = (value:string) => {
+        setUserId(value);
+    }
+    const changeTypeContributor = (value:string) => {
+        setTypeContributor(value);
     }
 
   return (
     <>
         <div className="md:grid md:grid-cols-4 gap-8 pb-5  pt-5">
             <FormField
-                    control={form.control}
-                    name="affiliate.process"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Seleccion el proceso</FormLabel>
-                            <FormControl>
-                            <SelectSearch {...field} form={form} values={processList} nameValue="affiliate.process" onChangeProcess={changeProcess} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
+                control={form.control}
+                name="userId"
+                render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Seleccion el proceso</FormLabel>
+                        <FormControl>
+                        <SelectSearch {...field} form={form} values={users} nameValue="userId" onChangeProcess={changeUserSelect} />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                )}
+            />
+            <FormField
+                control={form.control}
+                name="process"
+                render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Seleccion el proceso</FormLabel>
+                        <FormControl>
+                        <SelectSearch {...field} form={form} values={processList} nameValue="process" onChangeProcess={changeProcess} />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                )}
+            />
         </div>
         {process == "AFILIACION" &&
             <Card className="">
@@ -54,16 +77,12 @@ const AffiliatePartial: React.FC<PartialFormType> = ({
                     <div className="md:grid md:grid-cols-4 gap-8 pb-5">
                         <FormField
                             control={form.control}
-                            name="affiliate.typeContributorId"
+                            name="typeContributorId"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Tipo de cotizante</FormLabel>
                                     <FormControl>
-                                        <Input
-                                        disabled={loading}
-                                        placeholder="Tipo de cotizante"
-                                        {...field}
-                                        />
+                                    <SelectSearch {...field} form={form} values={typeContributors} nameValue="typeContributorId" onChangeProcess={changeTypeContributor} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -71,12 +90,12 @@ const AffiliatePartial: React.FC<PartialFormType> = ({
                         />
                         <FormField
                             control={form.control}
-                            name="affiliate.eps"
+                            name="eps"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>EPSS</FormLabel>
                                     <FormControl className="truncate">
-                                        <SelectSearch {...field} form={form} values={eps} nameValue="affiliate.eps" />
+                                        <SelectSearch {...field} form={form} values={eps} nameValue="eps" />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -84,12 +103,12 @@ const AffiliatePartial: React.FC<PartialFormType> = ({
                         />
                         <FormField
                             control={form.control}
-                            name="affiliate.arl"
+                            name="arl"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>ARL</FormLabel>
                                     <FormControl className="truncate">
-                                        <SelectSearch {...field} form={form} values={arl} nameValue="affiliate.arl" />
+                                        <SelectSearch {...field} form={form} values={arl} nameValue="arl" />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -97,12 +116,12 @@ const AffiliatePartial: React.FC<PartialFormType> = ({
                         />
                         <FormField
                             control={form.control}
-                            name="affiliate.healt"
+                            name="healt"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>ARL</FormLabel>
                                     <FormControl className="truncate">
-                                        <SelectSearch {...field} form={form} values={healt} nameValue="affiliate.healt" />
+                                        <SelectSearch {...field} form={form} values={healt} nameValue="healt" />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -110,12 +129,12 @@ const AffiliatePartial: React.FC<PartialFormType> = ({
                         />
                         <FormField
                             control={form.control}
-                            name="affiliate.compensationBox"
+                            name="compensationBox"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Caja de compensación</FormLabel>
                                     <FormControl className="truncate">
-                                        <SelectSearch {...field} form={form} values={compensationBox} nameValue="affiliate.compensationBox" />
+                                        <SelectSearch {...field} form={form} values={compensationBox} nameValue="compensationBox" />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -123,7 +142,7 @@ const AffiliatePartial: React.FC<PartialFormType> = ({
                         />
                         <FormField
                             control={form.control}
-                            name="affiliate.admissionDate"
+                            name="admissionDate"
                             render={({ field }) => (
                                 <FormItem>
                                 <FormLabel>Fecha de ingreso</FormLabel>
@@ -136,7 +155,7 @@ const AffiliatePartial: React.FC<PartialFormType> = ({
                         />
                         <FormField
                             control={form.control}
-                            name="affiliate.salary"
+                            name="salary"
                             render={({ field }) => (
                                 <FormItem>
                                 <FormLabel>Salario</FormLabel>

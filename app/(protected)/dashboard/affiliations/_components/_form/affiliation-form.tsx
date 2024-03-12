@@ -11,9 +11,9 @@ import { Separator } from "@/components/ui/separator";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import axios from "axios";
 import { register } from "@/actions/register";
-import { UserSchema } from "@/schemas";
+import { AffiliateSchema, UserSchema } from "@/schemas";
 
-import { UserdefaultValue, UsersDto } from "@/types";
+import { AffiliateDto, UserdefaultValue, UsersDto } from "@/types";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AffiliatePartial from "./affiliate-partial"; 
 import BeneficiariesPartial from "./beneficiaries-partial";
@@ -23,14 +23,25 @@ export interface PartialFormType  {
     form : UseFormReturn,
     loading: boolean,
     edit: boolean,
-    affiliates: []
+    affiliates: [],
+    users: ISelect[],
+    typeContributors: ISelect[]
+}
+
+export interface ISelect {
+    item: String,
+    label: String
 }
 interface UserFormProps {
     initialData: any | null;
+    users: ISelect[],
+    typeContributors: ISelect[]
 }
 
 export const AffiliateForm: React.FC<UserFormProps> = ({
-    initialData
+    initialData,
+    users,
+    typeContributors
 }) => {
     const router = useRouter();
     const [open, setOpen] = useState(false);
@@ -43,8 +54,8 @@ export const AffiliateForm: React.FC<UserFormProps> = ({
 
     const defaultValues = initialData ? initialData : UserdefaultValue;
 
-    const form= useForm<UsersDto>({
-        resolver: zodResolver(UserSchema),
+    const form= useForm<AffiliateDto>({
+        resolver: zodResolver(AffiliateSchema),
         defaultValues,
     });
 
@@ -59,7 +70,7 @@ export const AffiliateForm: React.FC<UserFormProps> = ({
 
     }, [form.formState, setPersonalErr]);
 
-    const onSubmit = async (values: UsersDto) => {
+    const onSubmit = async (values: AffiliateDto) => {
         setLoading(true);
 
         if (initialData) {
@@ -84,7 +95,7 @@ export const AffiliateForm: React.FC<UserFormProps> = ({
                             description: data.success,
                         });
                         router.refresh();
-                        router.push(`/dashboard/user`);
+                        router.push(`/dashboard/affiliate`);
                     }
                     setLoading(false);
                 });
@@ -120,7 +131,14 @@ export const AffiliateForm: React.FC<UserFormProps> = ({
                         </TabsList>
                         <Separator className="my-3" />
                         <TabsContent value="affiliate" className="m-0">
-                            <AffiliatePartial form={form} loading={loading} edit={initialData ? true : false} affiliates={initialData.affiliate || []}  />
+                            <AffiliatePartial 
+                                form={form} 
+                                users={users} 
+                                loading={loading} 
+                                edit={initialData ? true : false} 
+                                affiliates={initialData.affiliate || []}
+                                typeContributors={typeContributors}
+                            />
                         </TabsContent>
                         <TabsContent value="beneficiaries" className="m-0">
                             <BeneficiariesPartial form={form} loading={loading} edit={initialData ? true : false} />

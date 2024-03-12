@@ -1,3 +1,5 @@
+import { unstable_noStore as noStore } from "next/cache";
+
 import BreadCrumb from "@/components/breadcrumb";
 import { db } from "@/lib/db";
 
@@ -6,6 +8,7 @@ import { columns } from "./_components/columns";
 
 const breadcrumbItems = [{ title: "Usuarios", link: "/dashboard/user" }];
 export default async function page() {
+  noStore();
 
   const xprisma = db.$extends({
     result: {

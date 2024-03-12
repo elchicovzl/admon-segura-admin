@@ -1,3 +1,4 @@
+import { unstable_noStore as noStore } from "next/cache";
 import BreadCrumb from "@/components/breadcrumb";
 import { UserForm } from "./user-form";
 
@@ -11,6 +12,7 @@ const breadcrumbItems = [
 ];
 
 export default async function page() {
+    noStore();
     return (
         <>
         <div className="flex-1 space-y-4  p-4 md:p-8 pt-6">

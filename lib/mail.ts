@@ -1,4 +1,4 @@
-import { Resend } from "resend";
+/* import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -43,3 +43,4 @@ export const sendVerificationEmail = async (
     html: `<p>Click <a href="${confirmLink}">here</a> to confirm email.</p>`
   });
 };
+ */
